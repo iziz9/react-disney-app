@@ -13,14 +13,14 @@ const MovieModal = ({
   setModalOpen
 }) => {
 
-  const ref = useRef(null);
+  const ref = useRef(null); //요소를 잡아주기 위해 만듦. ref.current에 요소가 들어가게 됨
   // console.log(ref.current)
 
   useOnClickOutside(ref, () => setModalOpen(false))
   return (
     <div className='presentation'>
       <div className='wrapper-modal'>
-        <div className='modal' ref={ref}>
+        <div className='modal' ref={ref}> 
           <span
             className='modal-close'
             onClick={() => setModalOpen(false)}

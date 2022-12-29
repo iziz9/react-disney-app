@@ -12,7 +12,7 @@ const Nav = () => {
   const [searchValue, setSearchValue] = useState('')
 
   useEffect(() => {
-    window.addEventListener('scoll', () => {
+    window.addEventListener('scroll', () => {
       if (window.scrollY > 50) {
         setShow(true)
       } else {
