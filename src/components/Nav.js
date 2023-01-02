@@ -2,14 +2,34 @@ import React from 'react'
 import styled from 'styled-components'
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 
 const Nav = () => {
 
+  const initialUserData = localStorage.getItem('userData')
+    ? JSON.parse(localStorage.getItem('userData'))
+    : {};
+
   const [show, setShow] = useState(false)
-  const location = useLocation()
-  console.log('pathname', location.pathname)
+  const { pathname } = useLocation();
   const navigate = useNavigate()
   const [searchValue, setSearchValue] = useState('')
+
+  const [userData, setUserData] = useState(initialUserData);
+
+  const auth = getAuth();
+  const provider = new GoogleAuthProvider()
+
+  useEffect(() => {
+    onAuthStateChanged(auth, user => {
+      if (!user) {
+        navigate("/")
+      } else if (user && pathname === "/") {
+        navigate("/main")
+      }
+    })
+  }, [auth, navigate]) // auto, navigate이 달라질 때 마다 다시 호출하게
+
 
   useEffect(() => {
     window.addEventListener('scroll', () => {
@@ -29,6 +49,27 @@ const Nav = () => {
     navigate(`/search?q=${e.target.value}`)
   }
 
+  const handleAuth = () => {
+    signInWithPopup(auth, provider)
+      .then(result => {
+        console.log(result)
+        setUserData(result.user)
+        localStorage.setItem('userData', JSON.stringify(result.user))
+      })
+      .catch(error => {
+        console.log("error: ", error)
+      })
+  }
+
+  const handleLogOut = () => {
+    signOut(auth).then(() => { //response가 오면 아래 함수를 처리
+      setUserData({});
+
+    }).catch(error => {
+      alert(error.message);
+    })
+  }
+
   return (
     <NavWrapper show={show}>
       <Logo>
@@ -38,16 +79,60 @@ const Nav = () => {
           onClick={() => (window.location.href = "/")}
         />
       </Logo>
-      {location.pathname === '/' ? (
-        <Login></Login>
+      {pathname === '/' ? (
+        <Login onClick={handleAuth}>Log in</Login>
       ) :
-        <Input
-          onChange={handleChange}
-        />
+        <>
+          <Input
+            onChange={handleChange}
+          />
+          <SignOut>
+            <UserImg src={userData.photoURL} alt={userData.displayName} />
+            <DropDown>
+              <span onClick={handleLogOut}>Sign Out</span>
+            </DropDown>
+          </SignOut>
+        </>
       }
     </NavWrapper>
   )
 }
+
+const DropDown = styled.div`
+  position: absolute;
+  top: 48px;
+  right: 0;
+  background: rgb(19,19,19);
+  border: 1px solid rgba(151,151,151,0.34);
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 14px;
+  letter-spacing: 3px;
+  width: 100px;
+  opacity: 0;
+`
+
+const SignOut = styled.div`
+  position: relative;
+  height: 48px;
+  width: 48px;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    ${DropDown} {
+      opacity: 1;
+      transition-duration: 1s;
+    }
+  }
+`
+const UserImg = styled.img`
+  height: 100%;
+  border-radius: 50%;
+`
+
 
 const Input = styled.input`
   position: fixed;

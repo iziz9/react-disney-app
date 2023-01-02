@@ -39,8 +39,8 @@ const Row = ({ title, id, fetchUrl }) => {
       <Swiper
         modules={[Navigation, Pagination, Scrollbar]}
         loop={true}
-        Navigation
-        Pagination={{ clickable: true }}
+        navigation
+        pagination={{ clickable: true }}
         breakpoints={{
           1378: {
             slidesPerView: 6,
