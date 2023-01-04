@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from '../api/axios'
 import MovieModal from './MovieModal';
 import styled from 'styled-components';
-import './Row.css';
+// import './Row.css';
 
 import { Navigation, Pagination, Scrollbar } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react'
