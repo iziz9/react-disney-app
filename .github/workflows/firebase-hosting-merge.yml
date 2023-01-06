@@ -11,6 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: access to secrets
+        run: |
+          echo "REACT_APP_API_KEY=$REACT_APP_API_KEY" >> .env
+        env:
+          REACT_APP_API_KEY: ${{secrets.REACT_APP_API_KEY}}
       - run: 'npm install && npm run build'
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
